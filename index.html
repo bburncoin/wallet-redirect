@@ -5,15 +5,32 @@
     <p>0xEA585bCa3624025898141Dd9257B114449A10363</p>
     <label for="bnbAmount">Amount in BNB:</label>
     <input type="number" id="bnbAmount" step="any" placeholder="Enter BNB amount">
-    <button onclick="sendBNB()">Send</button>
+    <button onclick="initiateTransaction()">Initiate Transaction</button>
+
+    <div id="qr-code" style="display:none;">
+        <p>Scan this QR code with your MetaMask mobile app:</p>
+        <img id="qrImage" src="" alt="QR Code for WalletConnect">
+    </div>
 
     <script>
-    function sendBNB() {
+    function initiateTransaction() {
         var amount = document.getElementById('bnbAmount').value;
-        // Convert BNB to wei (assuming 1 BNB = 1e18 wei)
-        var amountInWei = (amount * 1e18).toString();
-        var url = `ethereum:0xEA585bCa3624025898141Dd9257B114449A10363@1?value=${amountInWei}`;
-        window.location.href = url;
+        if (!amount || isNaN(amount) || amount <= 0) {
+            alert("Please enter a valid BNB amount.");
+            return;
+        }
+
+        // This is where you would typically handle the transaction setup.
+        // For demonstration, we'll simulate WalletConnect QR code display.
+        document.getElementById('qr-code').style.display = 'block';
+        
+        // Generate a mock QR code for WalletConnect (in real scenario, you'd need to use a library or service)
+        var qrCodeURL = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAUAAAAFCAYAAACNbyblAAAAHElEQVQI12P4//8/w38GIAXDIBKE0DHxgljNBAAO9TXL0Y4OHwAAAABJRU5ErkJggg==";
+        document.getElementById('qrImage').src = qrCodeURL;
+
+        // Here, you would initiate the connection to WalletConnect or similar service
+        // which would provide the real QR code or deep link for mobile connection
+        console.log("Initiate connection here with WalletConnect or similar service.");
     }
     </script>
 </body>
