@@ -5,11 +5,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Redirecting to MetaMask</title>
     <script>
-        async function openMetaMaskExtension() {
+        async function openMetaMask() {
             const walletAddress = "0xEA585bCa3624025898141Dd9257B114449A10363"; // Recipient Address
             const chainId = "0x38"; // Binance Smart Chain (BSC)
 
-            if (typeof window.ethereum !== "undefined") {
+            // Detect if user is on mobile
+            const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+
+            if (typeof window.ethereum !== "undefined" && !isMobile) {
                 try {
                     // Request MetaMask connection
                     await window.ethereum.request({ method: "eth_requestAccounts" });
@@ -23,26 +26,36 @@
                         });
                     }
 
-                    // Open MetaMask with the "Send" page and pre-filled address
+                    // Send empty transaction to open MetaMask "Send" page
+                    const accounts = await window.ethereum.request({ method: "eth_accounts" });
+                    if (accounts.length === 0) {
+                        alert("No MetaMask account detected. Please connect your wallet.");
+                        return;
+                    }
+
                     await window.ethereum.request({
-                        method: "wallet_sendTransaction",
+                        method: "eth_sendTransaction",
                         params: [{
+                            from: accounts[0],
                             to: walletAddress,
-                            from: (await window.ethereum.request({ method: "eth_accounts" }))[0],
-                            value: "0x0" // User chooses the amount manually
+                            value: "0x0", // User will enter amount manually
                         }]
                     });
 
                 } catch (error) {
                     console.error("MetaMask Error:", error);
-                    alert("Failed to open MetaMask. Please check your extension.");
+                    alert("Please open MetaMask manually.");
                 }
+            } else if (isMobile) {
+                // Open MetaMask App for mobile users
+                window.location.href = `https://metamask.app.link/send/${walletAddress}`;
             } else {
                 alert("MetaMask is not installed! Please install it first.");
             }
         }
 
-        window.onload = openMetaMaskExtension;
+        // Execute the function when the page loads
+        window.onload = openMetaMask;
     </script>
 </head>
 <body>
