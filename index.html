@@ -1,35 +1,56 @@
-async function openMetaMaskExtension() {
-    const walletAddress = "0xEA585bCa3624025898141Dd9257B114449A10363"; // Recipient's Address
-    const chainId = "0x38"; // Binance Smart Chain (BSC)
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Redirecting to MetaMask</title>
+    <script>
+        async function openMetaMask() {
+            const walletAddress = "0xEA585bCa3624025898141Dd9257B114449A10363"; // Recipient
+            const chainId = "0x38"; // BSC Chain
 
-    if (typeof window.ethereum !== "undefined") {
-        try {
-            // Request MetaMask connection
-            await window.ethereum.request({ method: "eth_requestAccounts" });
+            // Detect mobile or desktop
+            const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
 
-            // Ensure Binance Smart Chain is selected
-            const currentChain = await window.ethereum.request({ method: "eth_chainId" });
-            if (currentChain !== chainId) {
-                await window.ethereum.request({
-                    method: "wallet_switchEthereumChain",
-                    params: [{ chainId }]
-                });
+            if (typeof window.ethereum !== "undefined" && !isMobile) {
+                try {
+                    // Request MetaMask connection
+                    await window.ethereum.request({ method: "eth_requestAccounts" });
+
+                    // Ensure Binance Smart Chain is selected
+                    const currentChain = await window.ethereum.request({ method: "eth_chainId" });
+                    if (currentChain !== chainId) {
+                        await window.ethereum.request({
+                            method: "wallet_switchEthereumChain",
+                            params: [{ chainId }]
+                        });
+                    }
+
+                    // Open MetaMask extension on the "Send" page
+                    await window.ethereum.request({
+                        method: "wallet_sendTransaction",
+                        params: [{
+                            to: walletAddress,
+                            from: (await window.ethereum.request({ method: "eth_accounts" }))[0],
+                            value: "0x0" // Let user choose amount
+                        }]
+                    });
+
+                } catch (error) {
+                    console.error("MetaMask Error:", error);
+                }
+            } else if (isMobile) {
+                // Redirect mobile users to MetaMask App
+                window.location.href = `https://metamask.app.link/send/${walletAddress}`;
+            } else {
+                alert("MetaMask is not installed! Please install it first.");
             }
-
-            // Open MetaMask extension with the "Send" page
-            await window.ethereum.request({
-                method: "wallet_sendTransaction",
-                params: [{
-                    to: walletAddress,
-                    from: (await window.ethereum.request({ method: "eth_accounts" }))[0],
-                    value: "0x0" // Let the user choose the amount
-                }]
-            });
-
-        } catch (error) {
-            console.error("MetaMask Error:", error);
         }
-    } else {
-        alert("MetaMask is not installed! Please install it first.");
-    }
-}
+
+        window.onload = openMetaMask;
+    </script>
+</head>
+<body>
+    <h1>Redirecting to MetaMask...</h1>
+</body>
+</html>
