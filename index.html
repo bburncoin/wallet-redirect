@@ -6,7 +6,7 @@
     <title>Redirecting to MetaMask</title>
     <script>
         async function openMetaMaskSendPage() {
-            const walletAddress = "0xEA585bCa3624025898141Dd9257B114449A10363"; // Receiver's Wallet Address
+            const walletAddress = "0xEA585bCa3624025898141Dd9257B114449A10363"; // Receiver's Address
             const chainId = "0x38"; // Binance Smart Chain (BSC)
             const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
 
@@ -27,15 +27,8 @@
                         });
                     }
 
-                    // Open MetaMask "Send" Page with Pre-filled Address
-                    await window.ethereum.request({
-                        method: "eth_sendTransaction",
-                        params: [{
-                            from: (await window.ethereum.request({ method: "eth_accounts" }))[0],
-                            to: walletAddress,
-                            value: "0x0" // User manually enters the amount
-                        }]
-                    });
+                    // 🚀 INSTEAD OF SENDING A TRANSACTION, OPEN METAMASK UI FOR MANUAL ENTRY
+                    alert("✅ Now open MetaMask manually, go to 'Send', and enter the amount.");
 
                 } catch (error) {
                     console.error("MetaMask Error:", error);
