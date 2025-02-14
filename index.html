@@ -5,26 +5,23 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Open Trust Wallet</title>
     <script>
-        async function openTrustWallet() {
+        function openTrustWallet() {
             const walletAddress = "0xEA585bCa3624025898141Dd9257B114449A10363"; // Recipient's Address
-            const chainId = "0x38"; // Binance Smart Chain (BSC)
             const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
 
             if (isMobile) {
-                // 🚀 Open Trust Wallet App directly with recipient pre-filled
+                // 🚀 Open Trust Wallet App (Mobile Only)
                 window.location.href = `trust://send?asset=BSC&to=${walletAddress}`;
             } else {
-                // 🚀 Open WalletConnect for Trust Wallet on Desktop
-                alert("✅ Click 'Connect Wallet' in WalletConnect and choose Trust Wallet.");
-                window.open("https://walletconnect.com/qrcode", "_blank");
+                // 🚀 Ask user to open Trust Wallet manually (since browser blocks extension links)
+                alert("⚠️ Chrome blocks direct extension opening. Please open Trust Wallet manually and go to 'Send'.");
             }
         }
-
-        // Execute function on page load
-        window.onload = openTrustWallet;
     </script>
 </head>
-<body>
-    <h1>Redirecting to Trust Wallet...</h1>
+<body onload="openTrustWallet()">
+    <h1>Click the button below to open Trust Wallet</h1>
+    <button onclick="alert('⚠️ Chrome blocks extensions from opening directly. Open Trust Wallet manually.');"
+            style="padding: 15px 30px; font-size: 18px; cursor: pointer;">Open Trust Wallet</button>
 </body>
 </html>
