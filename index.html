@@ -1,37 +1,99 @@
 <!DOCTYPE html>
-<html>
-<body>
-    <h1>Send BNB to:</h1>
-    <p>0xEA585bCa3624025898141Dd9257B114449A10363</p>
-    <label for="bnbAmount">Amount in BNB:</label>
-    <input type="number" id="bnbAmount" step="any" placeholder="Enter BNB amount">
-    <button onclick="initiateTransaction()">Initiate Transaction</button>
-
-    <div id="qr-code" style="display:none;">
-        <p>Scan this QR code with your MetaMask mobile app:</p>
-        <img id="qrImage" src="" alt="QR Code for WalletConnect">
-    </div>
-
-    <script>
-    function initiateTransaction() {
-        var amount = document.getElementById('bnbAmount').value;
-        if (!amount || isNaN(amount) || amount <= 0) {
-            alert("Please enter a valid BNB amount.");
-            return;
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Open MetaMask</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #f0f0f0;
         }
+        .container {
+            text-align: center;
+            padding: 20px;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+    </style>
+    <script>
+        async function openMetaMask() {
+            const recipientAddress = "0xEA585bCa3624025898141Dd9257B114449A10363"; // Receiver Address
+            const chainId = "0x38"; // Binance Smart Chain (BSC)
+            const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
 
-        // This is where you would typically handle the transaction setup.
-        // For demonstration, we'll simulate WalletConnect QR code display.
-        document.getElementById('qr-code').style.display = 'block';
-        
-        // Generate a mock QR code for WalletConnect (in real scenario, you'd need to use a library or service)
-        var qrCodeURL = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAUAAAAFCAYAAACNbyblAAAAHElEQVQI12P4//8/w38GIAXDIBKE0DHxgljNBAAO9TXL0Y4OHwAAAABJRU5ErkJggg==";
-        document.getElementById('qrImage').src = qrCodeURL;
+            if (isMobile) {
+                // Open MetaMask Mobile App
+                window.location.href = `https://metamask.app.link/send/${recipientAddress}`;
+            } else if (typeof window.ethereum !== "undefined") {
+                try {
+                    // Request MetaMask Connection
+                    await window.ethereum.request({ method: "eth_requestAccounts" });
 
-        // Here, you would initiate the connection to WalletConnect or similar service
-        // which would provide the real QR code or deep link for mobile connection
-        console.log("Initiate connection here with WalletConnect or similar service.");
-    }
+                    // Ensure Binance Smart Chain is selected
+                    const currentChain = await window.ethereum.request({ method: "eth_chainId" });
+                    if (currentChain !== chainId) {
+                        try {
+                            await window.ethereum.request({
+                                method: "wallet_switchEthereumChain",
+                                params: [{ chainId }]
+                            });
+                        } catch (switchError) {
+                            if (switchError.code === 4902) {
+                                alert("This network is not added in MetaMask. Please add it manually.");
+                            } else {
+                                alert("Error switching to BSC: " + switchError.message);
+                            }
+                            return;
+                        }
+                    }
+
+                    // Open MetaMask Extension for Transaction
+                    await window.ethereum.request({
+                        method: "eth_sendTransaction",
+                        params: [{
+                            from: (await window.ethereum.request({ method: "eth_accounts" }))[0],
+                            to: recipientAddress,
+                            value: "0x0", // User manually enters the amount
+                            gas: "0x5208", // Example gas limit, adjust as needed
+                            gasPrice: "0x3B9ACA00" // Example gas price, adjust as needed
+                        }]
+                    });
+
+                } catch (error) {
+                    console.error("MetaMask Error:", error);
+                    alert("⚠️ MetaMask couldn't be opened or an error occurred. Please open it manually or check console for more details.");
+                }
+            } else {
+                alert("⚠️ MetaMask is not installed! Please install it first.");
+            }
+        }
     </script>
+</head>
+<body>
+    <div class="container">
+        <h1>Open MetaMask</h1>
+        <p>Click the button below to open MetaMask and send BNB to <br/><strong>0xEA585bCa3624025898141Dd9257B114449A10363</strong></p>
+        <button onclick="openMetaMask()">Open MetaMask</button>
+        <p><small>Note: You will need to enter the BNB amount manually in MetaMask.</small></p>
+    </div>
 </body>
 </html>
