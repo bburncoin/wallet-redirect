@@ -3,25 +3,43 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Open Trust Wallet</title>
+    <title>Open Phantom Wallet</title>
     <script>
-        function openTrustWallet() {
-            const walletAddress = "0xEA585bCa3624025898141Dd9257B114449A10363"; // Recipient's Address
+        async function openPhantomWallet() {
+            const recipientAddress = "0xEA585bCa3624025898141Dd9257B114449A10363"; // Receiver Address
             const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
 
             if (isMobile) {
-                // 🚀 Open Trust Wallet App (Mobile Only)
-                window.location.href = `trust://send?asset=BSC&to=${walletAddress}`;
+                // 🚀 Open Phantom Mobile App (Solana Pay URL Scheme)
+                window.location.href = `https://phantom.app/ul/browse/${recipientAddress}`;
+            } else if (window.solana && window.solana.isPhantom) {
+                try {
+                    // 🚀 Request Phantom Connection
+                    await window.solana.connect();
+
+                    // 🚀 Open Phantom Send Transaction UI
+                    const transaction = {
+                        recipient: recipientAddress,
+                        amount: 0, // User enters manually
+                        network: "solana"
+                    };
+
+                    await window.solana.request({
+                        method: "transfer",
+                        params: [transaction]
+                    });
+
+                } catch (error) {
+                    console.error("Phantom Error:", error);
+                    alert("⚠️ Phantom couldn't be opened. Please open it manually.");
+                }
             } else {
-                // 🚀 Ask user to open Trust Wallet manually (since browser blocks extension links)
-                alert("⚠️ Chrome blocks direct extension opening. Please open Trust Wallet manually and go to 'Send'.");
+                alert("⚠️ Phantom Wallet is not installed! Please install it first.");
             }
         }
     </script>
 </head>
-<body onload="openTrustWallet()">
-    <h1>Click the button below to open Trust Wallet</h1>
-    <button onclick="alert('⚠️ Chrome blocks extensions from opening directly. Open Trust Wallet manually.');"
-            style="padding: 15px 30px; font-size: 18px; cursor: pointer;">Open Trust Wallet</button>
+<body onload="openPhantomWallet()">
+    <h1>Redirecting to Phantom Wallet...</h1>
 </body>
 </html>
