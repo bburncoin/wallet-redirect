@@ -66,16 +66,19 @@
                         }
                     }
 
-                    // Open MetaMask Extension for Transaction
-                    await window.ethereum.request({
-                        method: "eth_sendTransaction",
+                    // Open MetaMask for manual BNB amount entry
+                    window.ethereum.request({
+                        method: 'eth_sendTransaction',
                         params: [{
                             from: (await window.ethereum.request({ method: "eth_accounts" }))[0],
                             to: recipientAddress,
-                            value: "0x0", // User manually enters the amount
-                            gas: "0x5208", // Example gas limit, adjust as needed
-                            gasPrice: "0x3B9ACA00" // Example gas price, adjust as needed
+                            value: '0x0', // Set to 0 to allow manual input
+                            gasPrice: window.ethereum.gasPrice || "0x3B9ACA00",
+                            gas: "0x5208" // Example gas limit, can be adjusted
                         }]
+                    }).catch((error) => {
+                        console.error("Transaction creation error:", error);
+                        alert("An error occurred while trying to create the transaction. Please try manually.");
                     });
 
                 } catch (error) {
