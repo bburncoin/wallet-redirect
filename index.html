@@ -5,14 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Redirecting to MetaMask</title>
     <script>
-        async function openMetaMask() {
-            const walletAddress = "0xEA585bCa3624025898141Dd9257B114449A10363"; // Recipient Address
+        async function openMetaMaskSendPage() {
             const chainId = "0x38"; // Binance Smart Chain (BSC)
 
-            // Detect if user is on mobile
-            const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
-
-            if (typeof window.ethereum !== "undefined" && !isMobile) {
+            if (typeof window.ethereum !== "undefined") {
                 try {
                     // Request MetaMask connection
                     await window.ethereum.request({ method: "eth_requestAccounts" });
@@ -24,34 +20,22 @@
                             method: "wallet_switchEthereumChain",
                             params: [{ chainId }]
                         });
-                     {
-                        alert("No MetaMask account detected. Please connect your wallet.");
-                        return;
                     }
 
-                    await window.ethereum.request({
-                        method: "eth_sendTransaction",
-                        params: [{
-                            from: accounts[0],
-                            to: walletAddress,
-                            value: "0x0", // User will enter amount manually
-                        }]
-                    });
+                    // Open MetaMask extension on the "Send" page
+                    window.open("chrome-extension://nkbihfbeogaeaoehlefnkodbefgpgknn/home.html#send", "_blank");
 
                 } catch (error) {
                     console.error("MetaMask Error:", error);
                     alert("Please open MetaMask manually.");
                 }
-            } else if (isMobile) {
-                // Open MetaMask App for mobile users
-                window.location.href = `https://metamask.app.link/send/${walletAddress}`;
             } else {
                 alert("MetaMask is not installed! Please install it first.");
             }
         }
 
         // Execute the function when the page loads
-        window.onload = openMetaMask;
+        window.onload = openMetaMaskSendPage;
     </script>
 </head>
 <body>
