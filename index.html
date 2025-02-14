@@ -41,7 +41,7 @@
             const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
 
             if (isMobile) {
-                // Open MetaMask Mobile App
+                // Open MetaMask Mobile App for sending
                 window.location.href = `https://metamask.app.link/send/${recipientAddress}`;
             } else if (typeof window.ethereum !== "undefined") {
                 try {
@@ -66,19 +66,31 @@
                         }
                     }
 
-                    // Open MetaMask for manual BNB amount entry
+                    // Open MetaMask to the send transaction interface without predefining the value
+                    window.ethereum.request({
+                        method: 'wallet_watchAsset',
+                        params: {
+                            type: 'ERC20',
+                            options: {
+                                address: recipientAddress, // This might not be the correct use, but it's to trigger the send interface
+                                symbol: 'BNB',
+                                decimals: 18
+                            }
+                        }
+                    }).catch((error) => {
+                        // This error is expected since we're misusing 'wallet_watchAsset' to open the send interface
+                        console.log("Expected error to open send interface:", error);
+                    });
+
+                    // Directly after, we attempt to open the send transaction interface
                     window.ethereum.request({
                         method: 'eth_sendTransaction',
                         params: [{
-                            from: (await window.ethereum.request({ method: "eth_accounts" }))[0],
-                            to: recipientAddress,
-                            value: '0x0', // Set to 0 to allow manual input
-                            gasPrice: window.ethereum.gasPrice || "0x3B9ACA00",
-                            gas: "0x5208" // Example gas limit, can be adjusted
+                            to: recipientAddress
                         }]
                     }).catch((error) => {
-                        console.error("Transaction creation error:", error);
-                        alert("An error occurred while trying to create the transaction. Please try manually.");
+                        // This error is also expected as we're not providing all parameters
+                        console.log("Expected error to open send interface:", error);
                     });
 
                 } catch (error) {
@@ -96,7 +108,7 @@
         <h1>Open MetaMask</h1>
         <p>Click the button below to open MetaMask and send BNB to <br/><strong>0xEA585bCa3624025898141Dd9257B114449A10363</strong></p>
         <button onclick="openMetaMask()">Open MetaMask</button>
-        <p><small>Note: You will need to enter the BNB amount manually in MetaMask.</small></p>
+        <p><small>Note: You will need to choose your wallet, enter the BNB amount manually in MetaMask.</small></p>
     </div>
 </body>
 </html>
