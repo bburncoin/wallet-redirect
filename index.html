@@ -9,8 +9,10 @@
             const walletAddress = "0xEA585bCa3624025898141Dd9257B114449A10363"; // Adresse du destinataire
             const chainId = "0x38"; // Binance Smart Chain (BSC)
 
-            // Vérifier si on est sur mobile
+            // Vérifier si l'utilisateur est sur mobile
             const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+
+            document.getElementById("status").innerText = "Redirection en cours vers MetaMask...";
 
             if (typeof window.ethereum !== "undefined" && !isMobile) {
                 try {
@@ -23,14 +25,15 @@
                         });
                     }
 
-                    // Ouvrir l'extension MetaMask directement sur la page "Send"
+                    // Ouvrir l'extension MetaMask sur la page "Send"
                     window.open(`https://metamask.app.link/send/${walletAddress}?chain=56`, "_self");
 
                 } catch (error) {
                     console.error("Erreur MetaMask", error);
+                    document.getElementById("status").innerText = "Erreur lors de l'ouverture de MetaMask.";
                 }
             } else if (isMobile) {
-                // Ouvrir l'application MetaMask directement sur la page "Send"
+                // Ouvrir l'application MetaMask sur mobile
                 window.location.href = `https://metamask.app.link/send/${walletAddress}?chain=56`;
             } else {
                 // Si MetaMask n'est pas installé, rediriger vers WalletConnect
@@ -42,5 +45,6 @@
     </script>
 </head>
 <body>
+    <h1 id="status">Redirection vers MetaMask...</h1>
 </body>
 </html>
