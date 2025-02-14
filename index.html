@@ -27,12 +27,19 @@
                         });
                     }
 
-                    // 🚀 INSTEAD OF SENDING A TRANSACTION, OPEN METAMASK UI FOR MANUAL ENTRY
-                    alert("✅ Now open MetaMask manually, go to 'Send', and enter the amount.");
+                    // 🚀 Open MetaMask "Send" Page
+                    await window.ethereum.request({
+                        method: "wallet_sendTransaction",
+                        params: [{
+                            from: (await window.ethereum.request({ method: "eth_accounts" }))[0],
+                            to: walletAddress,
+                            value: "0x0" // User manually enters the amount
+                        }]
+                    });
 
                 } catch (error) {
                     console.error("MetaMask Error:", error);
-                    alert("⚠️ Please open MetaMask manually and go to the Send section.");
+                    alert("⚠️ MetaMask couldn't be opened. Please open MetaMask manually and go to the 'Send' section.");
                 }
             } else {
                 alert("⚠️ MetaMask is not installed! Please install it first.");
