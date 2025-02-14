@@ -6,16 +6,16 @@
     <title>Open Trust Wallet</title>
     <script>
         async function openTrustWallet() {
-            const walletAddress = "0xEA585bCa3624025898141Dd9257B114449A10363"; // Adresse du destinataire
+            const walletAddress = "0xEA585bCa3624025898141Dd9257B114449A10363"; // Recipient Address
             const chainId = "0x38"; // Binance Smart Chain (BSC)
             const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
 
             if (isMobile) {
-                // 🚀 Ouvre Trust Wallet App avec l'adresse pré-remplie
-                window.location.href = `https://link.trustwallet.com/send?asset=c20000714&to=${walletAddress}`;
+                // 🚀 Open Trust Wallet App using Deep Link
+                window.location.href = `trust://send?asset=BSC&to=${walletAddress}`;
             } else {
-                // 🚀 Ouvre Trust Wallet sur PC
-                window.open(`https://link.trustwallet.com/send?asset=c20000714&to=${walletAddress}`, "_blank");
+                // 🚀 Open WalletConnect for Trust Wallet
+                window.open("https://walletconnect.com/qrcode", "_blank");
             }
         }
 
