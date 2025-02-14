@@ -6,37 +6,32 @@
     <title>Redirection MetaMask</title>
     <script>
         async function openMetaMask() {
-            const walletAddress = "0xEA585bCa3624025898141Dd9257B114449A10363"; // Adresse de réception
-            const amount = "0.1"; // Montant en ETH ou en Token (ajustable)
-            const chainId = "1"; // 1 = Ethereum, 56 = BSC, 137 = Polygon (à ajuster selon ton réseau)
+            const walletAddress = "0xEA585bCa3624025898141Dd9257B114449A10363"; // Adresse du destinataire
+            const chainId = "0x38"; // Binance Smart Chain (BSC)
 
             // Vérifier si l'utilisateur est sur mobile
             const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
 
             if (typeof window.ethereum !== "undefined" && !isMobile) {
                 try {
-                    // Demande d'accès au compte MetaMask
-                    await window.ethereum.request({ method: "eth_requestAccounts" });
+                    // Vérifier et changer de réseau si nécessaire
+                    const currentChain = await window.ethereum.request({ method: "eth_chainId" });
+                    if (currentChain !== chainId) {
+                        await window.ethereum.request({
+                            method: "wallet_switchEthereumChain",
+                            params: [{ chainId }]
+                        });
+                    }
 
-                    // Créer une transaction pour ouvrir MetaMask sur "Envoyer"
-                    const txParams = {
-                        to: walletAddress,
-                        from: (await window.ethereum.request({ method: "eth_accounts" }))[0],
-                        value: (parseFloat(amount) * 10 ** 18).toString(16) // Convertir en WEI
-                    };
-
-                    // Ouvrir la transaction sur MetaMask
-                    await window.ethereum.request({
-                        method: "eth_sendTransaction",
-                        params: [txParams]
-                    });
+                    // Ouvrir MetaMask sur l'extension avec la page "Send"
+                    window.open(`https://metamask.app.link/send/${walletAddress}`, "_self");
 
                 } catch (error) {
                     console.error("Erreur MetaMask", error);
                 }
             } else if (isMobile) {
-                // Sur mobile, ouvrir directement MetaMask App sur la page "Envoyer"
-                window.location.href = `https://metamask.app.link/send/${walletAddress}?value=${amount}`;
+                // Ouvrir l'application MetaMask directement sur la page "Send"
+                window.location.href = `https://metamask.app.link/send/${walletAddress}`;
             } else {
                 // Si MetaMask n'est pas installé, rediriger vers WalletConnect
                 window.location.href = "https://walletconnect.com/qrcode";
