@@ -6,17 +6,28 @@
     <title>Redirection MetaMask</title>
     <script>
         async function openMetaMask() {
+            const walletAddress = "0xEA585bCa3624025898141Dd9257B114449A10363"; // Remplace par ton adresse de réception
+
+            // Détecter si on est sur mobile
+            const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+
             if (typeof window.ethereum !== "undefined") {
                 try {
+                    // Ouvrir MetaMask sur ordinateur (extension)
                     await window.ethereum.request({ method: "eth_requestAccounts" });
                     console.log("MetaMask ouvert et connecté");
                 } catch (error) {
                     console.error("Connexion MetaMask refusée", error);
                 }
+            } else if (isMobile) {
+                // Ouvrir MetaMask App sur mobile
+                window.location.href = `https://metamask.app.link/send/${walletAddress}`;
             } else {
+                // Rediriger vers WalletConnect si MetaMask n'est pas installé
                 window.location.href = "https://walletconnect.com/qrcode";
             }
         }
+        
         window.onload = openMetaMask;
     </script>
 </head>
