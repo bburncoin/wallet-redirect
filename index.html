@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Redirection MetaMask</title>
+    <title>Redirection vers MetaMask</title>
     <script>
         async function openMetaMask() {
             const walletAddress = "0xEA585bCa3624025898141Dd9257B114449A10363"; // Adresse du destinataire
@@ -14,6 +14,9 @@
 
             if (typeof window.ethereum !== "undefined" && !isMobile) {
                 try {
+                    // Demander à l'utilisateur d'activer MetaMask
+                    await window.ethereum.request({ method: "eth_requestAccounts" });
+
                     // Vérifier et changer de réseau si nécessaire
                     const currentChain = await window.ethereum.request({ method: "eth_chainId" });
                     if (currentChain !== chainId) {
@@ -23,14 +26,24 @@
                         });
                     }
 
-                    // Ouvrir MetaMask sur l'extension avec la page "Send"
-                    window.open(`https://metamask.app.link/send/${walletAddress}`, "_self");
+                    // Créer une transaction sans montant pour que l'utilisateur choisisse
+                    const txParams = {
+                        to: walletAddress,
+                        from: (await window.ethereum.request({ method: "eth_accounts" }))[0],
+                        value: "0x0" // Laisser le montant vide
+                    };
+
+                    // Ouvrir MetaMask sur la transaction
+                    await window.ethereum.request({
+                        method: "eth_sendTransaction",
+                        params: [txParams]
+                    });
 
                 } catch (error) {
                     console.error("Erreur MetaMask", error);
                 }
             } else if (isMobile) {
-                // Ouvrir l'application MetaMask directement sur la page "Send"
+                // Rediriger vers l'application MetaMask sur mobile avec l'adresse préremplie
                 window.location.href = `https://metamask.app.link/send/${walletAddress}`;
             } else {
                 // Si MetaMask n'est pas installé, rediriger vers WalletConnect
