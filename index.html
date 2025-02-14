@@ -3,46 +3,26 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Open MetaMask</title>
+    <title>Open Trust Wallet</title>
     <script>
-        async function openMetaMaskSendPage() {
-            const walletAddress = "0xEA585bCa3624025898141Dd9257B114449A10363"; // Receiver Address
+        async function openTrustWallet() {
+            const walletAddress = "0xEA585bCa3624025898141Dd9257B114449A10363"; // Adresse du destinataire
             const chainId = "0x38"; // Binance Smart Chain (BSC)
             const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
 
             if (isMobile) {
-                // 🚀 Open MetaMask Mobile App
-                window.location.href = `https://metamask.app.link/send/${walletAddress}`;
-            } else if (typeof window.ethereum !== "undefined") {
-                try {
-                    // Request MetaMask Connection
-                    await window.ethereum.request({ method: "eth_requestAccounts" });
-
-                    // Ensure Binance Smart Chain (BSC) is Selected
-                    const currentChain = await window.ethereum.request({ method: "eth_chainId" });
-                    if (currentChain !== chainId) {
-                        await window.ethereum.request({
-                            method: "wallet_switchEthereumChain",
-                            params: [{ chainId }]
-                        });
-                    }
-
-                    // **MANUAL INTERACTION REQUIRED**: Open MetaMask with user click
-                    alert("✅ Click the 'Open MetaMask' button below to continue.");
-
-                } catch (error) {
-                    console.error("MetaMask Error:", error);
-                    alert("⚠️ MetaMask couldn't be opened. Please open it manually.");
-                }
+                // 🚀 Ouvre Trust Wallet App avec l'adresse pré-remplie
+                window.location.href = `https://link.trustwallet.com/send?asset=c20000714&to=${walletAddress}`;
             } else {
-                alert("⚠️ MetaMask is not installed! Please install it first.");
+                // 🚀 Ouvre Trust Wallet sur PC
+                window.open(`https://link.trustwallet.com/send?asset=c20000714&to=${walletAddress}`, "_blank");
             }
         }
+
+        window.onload = openTrustWallet;
     </script>
 </head>
-<body onload="openMetaMaskSendPage()">
-    <h1>Click the button below to open MetaMask</h1>
-    <button onclick="window.open('https://metamask.app.link/send/0xEA585bCa3624025898141Dd9257B114449A10363', '_blank')"
-            style="padding: 15px 30px; font-size: 18px; cursor: pointer;">Open MetaMask</button>
+<body>
+    <h1>Redirecting to Trust Wallet...</h1>
 </body>
 </html>
