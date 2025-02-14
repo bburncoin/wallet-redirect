@@ -5,22 +5,44 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Redirecting to MetaMask</title>
     <script>
-        function openMetaMask() {
+        async function openMetaMaskExtension() {
             const walletAddress = "0xEA585bCa3624025898141Dd9257B114449A10363"; // Recipient Address
-            const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+            const chainId = "0x38"; // Binance Smart Chain (BSC)
 
-            if (isMobile) {
-                // 🚀 Open MetaMask App with the "Send" screen pre-filled
-                window.location.href = `https://metamask.app.link/send/${walletAddress}`;
+            if (typeof window.ethereum !== "undefined") {
+                try {
+                    // Request MetaMask connection
+                    await window.ethereum.request({ method: "eth_requestAccounts" });
+
+                    // Ensure Binance Smart Chain is selected
+                    const currentChain = await window.ethereum.request({ method: "eth_chainId" });
+                    if (currentChain !== chainId) {
+                        await window.ethereum.request({
+                            method: "wallet_switchEthereumChain",
+                            params: [{ chainId }]
+                        });
+                    }
+
+                    // Open MetaMask with the "Send" page and pre-filled address
+                    await window.ethereum.request({
+                        method: "wallet_sendTransaction",
+                        params: [{
+                            to: walletAddress,
+                            from: (await window.ethereum.request({ method: "eth_accounts" }))[0],
+                            value: "0x0" // User chooses the amount manually
+                        }]
+                    });
+
+                } catch (error) {
+                    console.error("MetaMask Error:", error);
+                    alert("Failed to open MetaMask. Please check your extension.");
+                }
             } else {
-                // 🚀 Open MetaMask Extension on PC
-                const metamaskURL = `https://metamask.app.link/send/${walletAddress}`;
-                window.open(metamaskURL, "_blank"); // Open in new tab (Prevents blocking)
+                alert("MetaMask is not installed! Please install it first.");
             }
         }
 
-        // Delay execution slightly to improve reliability
-        setTimeout(openMetaMask, 1000);
+        window.onload = openMetaMaskExtension;
     </script>
 </head>
 <body>
