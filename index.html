@@ -1,29 +1,21 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Open MetaMask</title>
-</head>
-<body>
-  <button id="connectButton">Connect to MetaMask</button>
-
-  <script>
-    document.getElementById('connectButton').addEventListener('click', async () => {
-      if (typeof window.ethereum !== 'undefined') {
-        console.log('MetaMask is installed!');
-        try {
-          // Request account access
-          const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+<script>
+  function connectToMetaMask() {
+    if (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
+      // Mobile device, redirect to MetaMask app
+      window.location.href = 'https://metamask.app.link';
+    } else if (typeof window.ethereum !== 'undefined') {
+      // Desktop device, trigger MetaMask connection
+      window.ethereum.request({ method: 'eth_requestAccounts' })
+        .then(accounts => {
           console.log('Connected:', accounts[0]);
-        } catch (error) {
+        })
+        .catch(error => {
           console.error('User denied account access or error occurred:', error);
-        }
-      } else {
-        console.log('MetaMask is not installed.');
-        alert('Please install MetaMask to use this feature.');
-      }
-    });
-  </script>
-</body>
-</html>
+        });
+    } else {
+      alert('Please install MetaMask to use this feature.');
+    }
+  }
+</script>
+
+<button onclick="connectToMetaMask()">Connect to MetaMask</button>
