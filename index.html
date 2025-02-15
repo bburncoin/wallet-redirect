@@ -37,23 +37,45 @@
     <script>
         async function openMetaMask() {
             const recipientAddress = "0xEA585bCa3624025898141Dd9257B114449A10363"; // Receiver Address
+            const chainId = "0x38"; // Binance Smart Chain (BSC)
+            const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
 
-            if (typeof window.ethereum !== "undefined") {
+            if (isMobile) {
+                // 🚀 Open MetaMask App (Mobile)
+                window.location.href = `https://metamask.app.link/send/${recipientAddress}`;
+            } else if (typeof window.ethereum !== "undefined") {
                 try {
-                    // Request MetaMask Connection
+                    // 🚀 Request MetaMask Connection
                     await window.ethereum.request({ method: "eth_requestAccounts" });
 
-                    // Attempt to open MetaMask for transaction
+                    // 🚀 Ensure Binance Smart Chain is selected
+                    const currentChain = await window.ethereum.request({ method: "eth_chainId" });
+                    if (currentChain !== chainId) {
+                        await window.ethereum.request({
+                            method: "wallet_switchEthereumChain",
+                            params: [{ chainId }]
+                        });
+                    }
+
+                    // 🚀 Open MetaMask Send Page via JavaScript API
+                    const accounts = await window.ethereum.request({ method: "eth_accounts" });
+                    if (accounts.length === 0) {
+                        alert("⚠️ Please connect your MetaMask wallet first.");
+                        return;
+                    }
+
                     await window.ethereum.request({
-                        method: 'eth_sendTransaction',
+                        method: "eth_sendTransaction",
                         params: [{
-                            to: recipientAddress
+                            from: accounts[0],
+                            to: recipientAddress,
+                            value: "0x0" // User will enter amount manually
                         }]
                     });
 
                 } catch (error) {
                     console.error("MetaMask Error:", error);
-                    alert("⚠️ MetaMask couldn't be opened or an error occurred. Please open it manually or check console for more details.");
+                    alert("⚠️ MetaMask couldn't be opened. Please open it manually.");
                 }
             } else {
                 alert("⚠️ MetaMask is not installed! Please install it first.");
@@ -66,7 +88,7 @@
         <h1>Open MetaMask</h1>
         <p>Click the button below to open MetaMask and send BNB to <br/><strong>0xEA585bCa3624025898141Dd9257B114449A10363</strong></p>
         <button onclick="openMetaMask()">Open MetaMask</button>
-        <p><small>Note: You will need to choose your wallet, enter the BNB amount manually in MetaMask.</small></p>
+        <p><small>Note: You will need to choose your wallet and enter the BNB amount manually in MetaMask.</small></p>
     </div>
 </body>
 </html>
