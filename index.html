@@ -1,20 +1,20 @@
-<button onclick="openMetaMask()">Open MetaMask</button>
+<button id="openMetaMask">Open MetaMask</button>
 
 <script>
-function openMetaMask() {
+document.getElementById('openMetaMask').addEventListener('click', async () => {
+    // Check if MetaMask is available
     if (typeof window.ethereum !== 'undefined') {
-        // Request account access (opens MetaMask extension)
-        window.ethereum.request({ method: 'eth_requestAccounts' })
-            .then(() => console.log("MetaMask opened successfully"))
-            .catch((error) => console.error("User rejected or error occurred:", error));
-    } else {
-        // Check if the user is on mobile
-        if (navigator.userAgent.match(/Android|iPhone|iPad|iPod/i)) {
-            window.location.href = "https://metamask.app.link/dapp/YOUR_WEBSITE_URL"; // Change to your actual website
-        } else {
-            // Redirect desktop users to install MetaMask
-            window.location.href = "https://metamask.io/download.html";
+        try {
+            // Request MetaMask to open and connect wallet
+            await window.ethereum.request({ method: 'eth_requestAccounts' });
+            console.log("MetaMask extension opened successfully!");
+        } catch (error) {
+            console.error("Error opening MetaMask:", error);
+            alert("MetaMask request was denied or an error occurred.");
         }
+    } else {
+        alert("MetaMask is not installed. Please install it first.");
+        window.open("https://metamask.io/download.html", "_blank");
     }
-}
+});
 </script>
