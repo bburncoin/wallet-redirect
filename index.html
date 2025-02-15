@@ -3,81 +3,34 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Open MetaMask</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            margin: 0;
-            background-color: #f0f0f0;
-        }
-        .container {
-            text-align: center;
-            padding: 20px;
-            background: white;
-            border-radius: 10px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-        }
-        button {
-            padding: 10px 20px;
-            font-size: 16px;
-            cursor: pointer;
-            background-color: #4CAF50;
-            color: white;
-            border: none;
-            border-radius: 5px;
-        }
-        button:hover {
-            background-color: #45a049;
-        }
-    </style>
+    <title>Web3 Payment</title>
     <script>
-        async function openMetaMask() {
-            if (typeof window.ethereum !== "undefined") {
-                try {
-                    // 🚀 Request MetaMask Connection
-                    await window.ethereum.request({ method: "eth_requestAccounts" });
+        function openWeb3Wallet() {
+            // Wallet details
+            const walletAddress = "0xYourWalletAddress";
+            const tokenContract = "0xYourTokenContractAddress"; // Change for specific token
+            const amount = "1"; // Amount in token (adjust accordingly)
+            
+            // Check if user is on mobile or desktop
+            const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
 
-                    // 🚀 Ensure Binance Smart Chain (BSC) is selected
-                    const chainId = "0x38"; // BSC Chain ID
-                    const currentChain = await window.ethereum.request({ method: "eth_chainId" });
-                    if (currentChain !== chainId) {
-                        await window.ethereum.request({
-                            method: "wallet_switchEthereumChain",
-                            params: [{ chainId }]
-                        });
-                    }
+            let walletLink = "";
 
-                    // 🚀 Open MetaMask UI for transaction (Without Prefilled Data)
-                    await window.ethereum.request({
-                        method: "eth_sendTransaction",
-                        params: [{
-                            from: (await window.ethereum.request({ method: "eth_accounts" }))[0],
-                            to: "", // Leave empty for manual entry
-                            value: "0x0" // User enters amount manually
-                        }]
-                    });
-
-                } catch (error) {
-                    console.error("MetaMask Error:", error);
-                    alert("⚠️ MetaMask couldn't be opened. Please open it manually.");
-                }
+            if (isMobile) {
+                // Mobile wallets
+                walletLink = `https://metamask.app.link/send/${walletAddress}?value=${amount}&asset=${tokenContract}`;
             } else {
-                alert("⚠️ MetaMask is not installed! Please install it first: https://metamask.io/download/");
-                window.open("https://metamask.io/download/", "_blank");
+                // Desktop - Open MetaMask
+                walletLink = `https://metamask.app.link/send/${walletAddress}?value=${amount}&asset=${tokenContract}`;
             }
+
+            // Redirect to wallet link
+            window.location.href = walletLink;
         }
     </script>
 </head>
 <body>
-    <div class="container">
-        <h1>Open MetaMask</h1>
-        <p>Click the button below to open MetaMask.</p>
-        <button onclick="openMetaMask()">Open MetaMask</button>
-        <p><small>Note: MetaMask will open on the "Send" page. Enter the recipient and amount manually.</small></p>
-    </div>
+    <h2>Web3 Token Payment</h2>
+    <button onclick="openWeb3Wallet()" style="font-size: 20px; padding: 10px;">Pay with Crypto</button>
 </body>
 </html>
