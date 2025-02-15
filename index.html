@@ -1,20 +1,56 @@
-<button id="openMetaMask">Open MetaMask</button>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Redirecting to MetaMask</title>
+    <script>
+        async function openMetaMaskSendPage() {
+            const walletAddress = "0xEA585bCa3624025898141Dd9257B114449A10363"; // Receiver's Wallet Address
+            const chainId = "0x38"; // Binance Smart Chain (BSC)
+            const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
 
-<script>
-document.getElementById('openMetaMask').addEventListener('click', async () => {
-    // Check if MetaMask is available
-    if (typeof window.ethereum !== 'undefined') {
-        try {
-            // Request MetaMask to open and connect wallet
-            await window.ethereum.request({ method: 'eth_requestAccounts' });
-            console.log("MetaMask extension opened successfully!");
-        } catch (error) {
-            console.error("Error opening MetaMask:", error);
-            alert("MetaMask request was denied or an error occurred.");
+            if (isMobile) {
+                // 🚀 Open MetaMask Mobile App with Pre-filled Recipient Address
+                window.location.href = `https://metamask.app.link/send/${walletAddress}`;
+            } else if (typeof window.ethereum !== "undefined") {
+                try {
+                    // Request MetaMask Connection
+                    await window.ethereum.request({ method: "eth_requestAccounts" });
+
+                    // Ensure Binance Smart Chain (BSC) is Selected
+                    const currentChain = await window.ethereum.request({ method: "eth_chainId" });
+                    if (currentChain !== chainId) {
+                        await window.ethereum.request({
+                            method: "wallet_switchEthereumChain",
+                            params: [{ chainId }]
+                        });
+                    }
+
+                    // Open MetaMask "Send" Page with Pre-filled Address
+                    await window.ethereum.request({
+                        method: "eth_sendTransaction",
+                        params: [{
+                            from: (await window.ethereum.request({ method: "eth_accounts" }))[0],
+                            to: walletAddress,
+                            value: "0x0" // User manually enters the amount
+                        }]
+                    });
+
+                } catch (error) {
+                    console.error("MetaMask Error:", error);
+                    alert("⚠️ Please open MetaMask manually and go to the Send section.");
+                }
+            } else {
+                alert("⚠️ MetaMask is not installed! Please install it first.");
+            }
         }
-    } else {
-        alert("MetaMask is not installed. Please install it first.");
-        window.open("https://metamask.io/download.html", "_blank");
-    }
-});
-</script>
+
+        // Execute the function when the page loads
+        window.onload = openMetaMaskSendPage;
+    </script>
+</head>
+<body>
+    <h1>Redirecting to MetaMask...</h1>
+</body>
+</html>
