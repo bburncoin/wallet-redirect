@@ -1,36 +1,12 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Open MetaMask</title>
-    <script>
-        async function openMetaMask() {
-            const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
-            
-            if (typeof window.ethereum !== "undefined") {
-                try {
-                    // Request access to MetaMask and open the extension
-                    const accounts = await window.ethereum.request({ method: "eth_requestAccounts" });
-                    if (accounts.length > 0) {
-                        alert("MetaMask is open and connected to: " + accounts[0]);
-                    }
-                } catch (error) {
-                    console.error("MetaMask Error", error);
-                    alert("Error opening MetaMask. Please check your extension.");
-                }
-            } else if (isMobile) {
-                // Directly open the MetaMask app on mobile
-                window.location.href = "https://metamask.app.link/wc";
-            } else {
-                alert("MetaMask is not installed. You will be redirected to the download page.");
-                window.location.href = "https://metamask.io/download.html";
-            }
-        }
-    </script>
-</head>
-<body>
-    <h1>Open MetaMask</h1>
-    <p><button onclick="openMetaMask();">Click here to open MetaMask</button></p>
-</body>
-</html>
+<script>
+  function redirectToMetaMask() {
+    if (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
+      // Mobile device, redirect to MetaMask app
+      window.location.href = 'https://metamask.app.link';
+    } else {
+      // Desktop device, prompt to open MetaMask extension
+      alert('Please open the MetaMask extension manually.');
+    }
+  }
+</script>
+<a href="javascript:redirectToMetaMask()">Open MetaMask</a>
