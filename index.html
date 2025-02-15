@@ -8,14 +8,17 @@
         async function openMetaMask() {
             if (typeof window.ethereum !== "undefined") {
                 try {
-                    // Demande d'accès au compte MetaMask
-                    await window.ethereum.request({ method: "eth_requestAccounts" });
-                    alert("MetaMask a été ouvert !");
+                    // Vérifie si MetaMask est disponible
+                    const accounts = await window.ethereum.request({ method: "eth_requestAccounts" });
+                    if (accounts.length > 0) {
+                        alert("MetaMask est ouvert et connecté à: " + accounts[0]);
+                    }
                 } catch (error) {
                     console.error("Erreur MetaMask", error);
+                    alert("Erreur lors de l'ouverture de MetaMask. Veuillez vérifier votre extension.");
                 }
             } else {
-                // Rediriger vers MetaMask si non installé
+                alert("MetaMask n'est pas installé. Vous serez redirigé vers la page de téléchargement.");
                 window.location.href = "https://metamask.io/download.html";
             }
         }
@@ -23,6 +26,6 @@
 </head>
 <body>
     <h1>Ouvrir MetaMask</h1>
-    <p><a href="#" onclick="openMetaMask(); return false;">Cliquez ici pour ouvrir MetaMask</a></p>
+    <p><button onclick="openMetaMask();">Cliquez ici pour ouvrir MetaMask</button></p>
 </body>
 </html>
