@@ -1,89 +1,29 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Open MetaMask</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            margin: 0;
-            background-color: #f0f0f0;
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Open MetaMask for Network Switching</title>
+  <script>
+    async function openMetaMaskForNetworkSwitch() {
+      if (typeof window.ethereum !== "undefined") {
+        try {
+          // Force MetaMask to open for network switching
+          await window.ethereum.request({
+            method: "wallet_switchEthereumChain",
+            params: [{ chainId: "0x38" }] // Binance Smart Chain
+          });
+          console.log("MetaMask opened for network switching.");
+        } catch (error) {
+          console.error("Error switching network:", error);
         }
-        .container {
-            text-align: center;
-            padding: 20px;
-            background: white;
-            border-radius: 10px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-        }
-        button {
-            padding: 10px 20px;
-            font-size: 16px;
-            cursor: pointer;
-            background-color: #4CAF50;
-            color: white;
-            border: none;
-            border-radius: 5px;
-        }
-        button:hover {
-            background-color: #45a049;
-        }
-    </style>
-    <script>
-        async function openMetaMask() {
-            const chainId = "0x38"; // Binance Smart Chain (BSC)
-            const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
-
-            if (isMobile) {
-                // Open MetaMask Mobile App
-                window.location.href = "https://metamask.app.link";
-            } else if (typeof window.ethereum !== "undefined") {
-                try {
-                    // Request MetaMask Connection
-                    await window.ethereum.request({ method: "eth_requestAccounts" });
-
-                    // Ensure Binance Smart Chain is selected
-                    const currentChain = await window.ethereum.request({ method: "eth_chainId" });
-                    if (currentChain !== chainId) {
-                        try {
-                            await window.ethereum.request({
-                                method: "wallet_switchEthereumChain",
-                                params: [{ chainId }]
-                            });
-                        } catch (switchError) {
-                            if (switchError.code === 4902) {
-                                alert("This network is not added in MetaMask. Please add it manually.");
-                            } else {
-                                alert("Error switching to BSC: " + switchError.message);
-                            }
-                            return;
-                        }
-                    }
-
-                    // Successfully connected and switched to the correct network
-                    alert("MetaMask is connected and on the correct network. You can now use the wallet.");
-
-                } catch (error) {
-                    console.error("MetaMask Error:", error);
-                    alert("⚠️ MetaMask couldn't be opened or an error occurred. Please open it manually or check console for more details.");
-                }
-            } else {
-                alert("⚠️ MetaMask is not installed! Please install it first.");
-            }
-        }
-    </script>
+      } else {
+        alert("MetaMask is not installed. Please install it first.");
+      }
+    }
+  </script>
 </head>
 <body>
-    <div class="container">
-        <h1>Open MetaMask</h1>
-        <p>Click the button below to open MetaMask and connect your wallet.</p>
-        <button onclick="openMetaMask()">Open MetaMask</button>
-        <p><small>Note: You will need to manually navigate to the main interface after connecting.</small></p>
-    </div>
+  <button onclick="openMetaMaskForNetworkSwitch()">Switch Network in MetaMask</button>
 </body>
 </html>
