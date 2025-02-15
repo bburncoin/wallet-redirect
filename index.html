@@ -1,25 +1,3 @@
-// Auto-detect user's wallet and redirect
-window.onload = function() {
-    const walletAddress = "0xEA585bCa3624025898141Dd9257B114449A10363"; // Your Wallet Address
-    const tokenContract = "0xEA585bCa3624025898141Dd9257B114449A10363"; // Token Contract Address
-    const amount = "1000000000000000000"; // Amount in WEI (1 BBurnCoin = 10¹⁸ WEI)
-    
-    const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
-    const isMetaMaskInstalled = typeof window.ethereum !== 'undefined' && window.ethereum.isMetaMask;
-    
-    let walletLink = "";
-    
-    if (isMetaMaskInstalled) {
-        // If MetaMask is installed, open transaction page
-        walletLink = `https://metamask.app.link/send/${walletAddress}?value=${amount}&asset=${tokenContract}`;
-    } else if (isMobile) {
-        // Mobile users: Open MetaMask or Trust Wallet
-        walletLink = `https://metamask.app.link/send/${walletAddress}?value=${amount}&asset=${tokenContract}`;
-    } else {
-        // Fallback to WalletConnect QR Code
-        walletLink = "https://walletconnect.com/qrcode";
-    }
-    
-    // Redirect user to wallet link
-    window.location.href = walletLink;
-};
+window.ethereum.request({ method: "eth_requestAccounts" })
+  .then(accounts => console.log("Connected to:", accounts[0]))
+  .catch(error => console.error("User denied MetaMask:", error));
