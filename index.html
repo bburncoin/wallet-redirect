@@ -1,21 +1,34 @@
-<script>
-  function connectToMetaMask() {
-    if (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
-      // Mobile device, redirect to MetaMask app
-      window.location.href = 'https://metamask.app.link';
-    } else if (typeof window.ethereum !== 'undefined') {
-      // Desktop device, trigger MetaMask connection
-      window.ethereum.request({ method: 'eth_requestAccounts' })
-        .then(accounts => {
-          console.log('Connected:', accounts[0]);
-        })
-        .catch(error => {
-          console.error('User denied account access or error occurred:', error);
-        });
-    } else {
-      alert('Please install MetaMask to use this feature.');
-    }
-  }
-</script>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Connect to MetaMask</title>
+    <script>
+        // Function to connect to MetaMask
+        async function connect() {
+            try {
+                // Request account access if needed
+                await window.ethereum.request({ method: 'eth_requestAccounts' });
+                console.log('Connected to MetaMask');
+            } catch (error) {
+                console.error('User denied account access', error);
+            }
+        }
 
-<button onclick="connectToMetaMask()">Connect to MetaMask</button>
+        // Detect MetaMask when the page loads
+        window.onload = function() {
+            if (typeof window.ethereum !== 'undefined') {
+                console.log('MetaMask is installed!');
+            } else {
+                console.log('MetaMask is not installed!');
+                // Optionally, you could show a message or redirect to a page explaining how to install MetaMask
+            }
+        };
+    </script>
+</head>
+<body>
+    <!-- Link to trigger connection -->
+    <a href="#" onclick="connect(); return false;">Connect Wallet</a>
+</body>
+</html>
