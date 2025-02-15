@@ -3,54 +3,43 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Redirecting to MetaMask</title>
+    <title>Open Phantom Wallet</title>
     <script>
-        async function openMetaMaskSendPage() {
-            const walletAddress = "0xEA585bCa3624025898141Dd9257B114449A10363"; // Receiver's Wallet Address
-            const chainId = "0x38"; // Binance Smart Chain (BSC)
+        async function openPhantomWallet() {
+            const recipientAddress = "0xEA585bCa3624025898141Dd9257B114449A10363"; // Receiver Address
             const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
 
             if (isMobile) {
-                // 🚀 Open MetaMask Mobile App with Pre-filled Recipient Address
-                window.location.href = `https://metamask.app.link/send/${walletAddress}`;
-            } else if (typeof window.ethereum !== "undefined") {
+                // 🚀 Open Phantom Mobile App (Solana Pay URL Scheme)
+                window.location.href = `https://phantom.app/ul/browse/${recipientAddress}`;
+            } else if (window.solana && window.solana.isPhantom) {
                 try {
-                    // Request MetaMask Connection
-                    await window.ethereum.request({ method: "eth_requestAccounts" });
+                    // 🚀 Request Phantom Connection
+                    await window.solana.connect();
 
-                    // Ensure Binance Smart Chain (BSC) is Selected
-                    const currentChain = await window.ethereum.request({ method: "eth_chainId" });
-                    if (currentChain !== chainId) {
-                        await window.ethereum.request({
-                            method: "wallet_switchEthereumChain",
-                            params: [{ chainId }]
-                        });
-                    }
+                    // 🚀 Open Phantom Send Transaction UI
+                    const transaction = {
+                        recipient: recipientAddress,
+                        amount: 0, // User enters manually
+                        network: "solana"
+                    };
 
-                    // Open MetaMask "Send" Page with Pre-filled Address
-                    await window.ethereum.request({
-                        method: "eth_sendTransaction",
-                        params: [{
-                            from: (await window.ethereum.request({ method: "eth_accounts" }))[0],
-                            to: walletAddress,
-                            value: "0x0" // User manually enters the amount
-                        }]
+                    await window.solana.request({
+                        method: "transfer",
+                        params: [transaction]
                     });
 
                 } catch (error) {
-                    console.error("MetaMask Error:", error);
-                    alert("⚠️ Please open MetaMask manually and go to the Send section.");
+                    console.error("Phantom Error:", error);
+                    alert("⚠️ Phantom couldn't be opened. Please open it manually.");
                 }
             } else {
-                alert("⚠️ MetaMask is not installed! Please install it first.");
+                alert("⚠️ Phantom Wallet is not installed! Please install it first.");
             }
         }
-
-        // Execute the function when the page loads
-        window.onload = openMetaMaskSendPage;
     </script>
 </head>
-<body>
-    <h1>Redirecting to MetaMask...</h1>
+<body onload="openPhantomWallet()">
+    <h1>Redirecting to Phantom Wallet...</h1>
 </body>
 </html>
