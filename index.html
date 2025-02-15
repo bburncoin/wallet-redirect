@@ -3,13 +3,18 @@
 <script>
 function openMetaMask() {
     if (typeof window.ethereum !== 'undefined') {
-        // Requesting MetaMask to open
+        // Request account access (opens MetaMask extension)
         window.ethereum.request({ method: 'eth_requestAccounts' })
             .then(() => console.log("MetaMask opened successfully"))
             .catch((error) => console.error("User rejected or error occurred:", error));
     } else {
-        // Redirect to MetaMask download page if not installed
-        window.location.href = "https://metamask.io/download.html";
+        // Check if the user is on mobile
+        if (navigator.userAgent.match(/Android|iPhone|iPad|iPod/i)) {
+            window.location.href = "https://metamask.app.link/dapp/YOUR_WEBSITE_URL"; // Change to your actual website
+        } else {
+            // Redirect desktop users to install MetaMask
+            window.location.href = "https://metamask.io/download.html";
+        }
     }
 }
 </script>
