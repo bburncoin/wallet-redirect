@@ -47,8 +47,11 @@
                     // 🚀 Request MetaMask Connection
                     await window.ethereum.request({ method: "eth_requestAccounts" });
 
-                    // 🚀 Inform the user to manually enter the recipient address & amount
-                    alert("✅ MetaMask is open. Please enter the recipient address and BNB amount manually.");
+                    // 🚀 Try opening MetaMask UI manually (User interaction required)
+                    setTimeout(() => {
+                        window.open("chrome-extension://nkbihfbeogaeaoehlefnkodbefgpgknn/home.html", "_blank");
+                    }, 500);
+
                 } catch (error) {
                     console.error("MetaMask Error:", error);
                     alert("⚠️ MetaMask couldn't be opened. Please open it manually.");
