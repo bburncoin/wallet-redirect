@@ -66,31 +66,12 @@
                         }
                     }
 
-                    // Open MetaMask to the send transaction interface without predefining the value
-                    window.ethereum.request({
-                        method: 'wallet_watchAsset',
-                        params: {
-                            type: 'ERC20',
-                            options: {
-                                address: recipientAddress, // This might not be the correct use, but it's to trigger the send interface
-                                symbol: 'BNB',
-                                decimals: 18
-                            }
-                        }
-                    }).catch((error) => {
-                        // This error is expected since we're misusing 'wallet_watchAsset' to open the send interface
-                        console.log("Expected error to open send interface:", error);
-                    });
-
-                    // Directly after, we attempt to open the send transaction interface
-                    window.ethereum.request({
+                    // This will open MetaMask but in a very basic form
+                    await window.ethereum.request({
                         method: 'eth_sendTransaction',
                         params: [{
                             to: recipientAddress
                         }]
-                    }).catch((error) => {
-                        // This error is also expected as we're not providing all parameters
-                        console.log("Expected error to open send interface:", error);
                     });
 
                 } catch (error) {
