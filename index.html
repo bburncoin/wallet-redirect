@@ -8,6 +8,9 @@
     async function openMetaMaskForNetworkSwitch() {
       if (typeof window.ethereum !== "undefined") {
         try {
+          // Request account access first (this opens MetaMask)
+          await window.ethereum.request({ method: "eth_requestAccounts" });
+
           // Force MetaMask to open for network switching
           await window.ethereum.request({
             method: "wallet_switchEthereumChain",
@@ -15,7 +18,12 @@
           });
           console.log("MetaMask opened for network switching.");
         } catch (error) {
-          console.error("Error switching network:", error);
+          console.error("Error:", error);
+          if (error.code === 4001) {
+            alert("User denied permission to switch networks.");
+          } else {
+            alert("An error occurred. Please ensure MetaMask is installed and try again.");
+          }
         }
       } else {
         alert("MetaMask is not installed. Please install it first.");
