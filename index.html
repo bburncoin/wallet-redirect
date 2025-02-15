@@ -2,25 +2,70 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Open MetaMask</title>
-</head>
-<body>
-    <button id="connectButton">Open MetaMask</button>
-
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #f0f0f0;
+        }
+        .container {
+            text-align: center;
+            padding: 20px;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+    </style>
     <script>
-        document.getElementById('connectButton').addEventListener('click', async () => {
-            if (typeof window.ethereum !== 'undefined') {
+        async function openMetaMask() {
+            const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+            const metamaskMobileLink = "https://metamask.app.link/wc";
+
+            if (isMobile) {
+                // 🚀 Open MetaMask Mobile App
+                window.location.href = metamaskMobileLink;
+            } else if (typeof window.ethereum !== "undefined") {
                 try {
-                    // This should prompt to connect or unlock MetaMask if not already connected
-                    await window.ethereum.request({ method: 'eth_requestAccounts' });
+                    // 🚀 Request MetaMask Connection
+                    await window.ethereum.request({ method: "eth_requestAccounts" });
+
+                    // 🚀 Inform the user to manually enter the recipient address & amount
+                    alert("✅ MetaMask is open. Please enter the recipient address and BNB amount manually.");
                 } catch (error) {
                     console.error("MetaMask Error:", error);
-                    alert("⚠️ An error occurred. Please check console for details.");
+                    alert("⚠️ MetaMask couldn't be opened. Please open it manually.");
                 }
             } else {
-                alert("⚠️ MetaMask is not installed! Please install it first.");
+                alert("⚠️ MetaMask is not installed! Please install it first: https://metamask.io/download/");
+                window.open("https://metamask.io/download/", "_blank");
             }
-        });
+        }
     </script>
+</head>
+<body>
+    <div class="container">
+        <h1>Open MetaMask</h1>
+        <p>Click the button below to open MetaMask.</p>
+        <button onclick="openMetaMask()">Open MetaMask</button>
+        <p><small>Note: You will need to choose your wallet and enter the recipient address & BNB amount manually.</small></p>
+    </div>
 </body>
 </html>
