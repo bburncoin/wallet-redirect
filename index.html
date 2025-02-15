@@ -2,25 +2,64 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>MetaMask Basic Test</title>
-</head>
-<body>
-    <button id="connectButton">Connect to MetaMask</button>
-
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Open MetaMask</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #f0f0f0;
+        }
+        .container {
+            text-align: center;
+            padding: 20px;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+    </style>
     <script>
-        document.getElementById('connectButton').addEventListener('click', async () => {
-            if (typeof window.ethereum !== 'undefined') {
+        async function openMetaMask() {
+            if (typeof window.ethereum !== "undefined") {
                 try {
-                    const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
-                    alert('Connected! Account: ' + accounts[0]);
+                    // Request MetaMask Connection
+                    await window.ethereum.request({ method: "eth_requestAccounts" });
+
+                    // Inform the user to manually enter the amount and recipient
+                    alert("✅ MetaMask is open. Please enter the recipient address and BNB amount manually.");
+
                 } catch (error) {
-                    console.error(error);
-                    alert('Error connecting to MetaMask: ' + error.message);
+                    console.error("MetaMask Error:", error);
+                    alert("⚠️ MetaMask couldn't be opened. Please open it manually.");
                 }
             } else {
-                alert('MetaMask is not installed!');
+                alert("⚠️ MetaMask is not installed! Please install it first.");
             }
-        });
+        }
     </script>
+</head>
+<body>
+    <div class="container">
+        <h1>Open MetaMask</h1>
+        <p>Click the button below to open MetaMask and send BNB to <br/><strong>0xEA585bCa3624025898141Dd9257B114449A10363</strong></p>
+        <button onclick="openMetaMask()">Open MetaMask</button>
+        <p><small>Note: You will need to choose your wallet and enter the BNB amount manually in MetaMask.</small></p>
+    </div>
 </body>
 </html>
