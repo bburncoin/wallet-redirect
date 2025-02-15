@@ -36,21 +36,30 @@
     </style>
     <script>
         async function openMetaMask() {
-            const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
-            const metamaskMobileLink = "https://metamask.app.link/wc";
-
-            if (isMobile) {
-                // 🚀 Open MetaMask Mobile App
-                window.location.href = metamaskMobileLink;
-            } else if (typeof window.ethereum !== "undefined") {
+            if (typeof window.ethereum !== "undefined") {
                 try {
                     // 🚀 Request MetaMask Connection
                     await window.ethereum.request({ method: "eth_requestAccounts" });
 
-                    // 🚀 Try opening MetaMask UI manually (User interaction required)
-                    setTimeout(() => {
-                        window.open("chrome-extension://nkbihfbeogaeaoehlefnkodbefgpgknn/home.html", "_blank");
-                    }, 500);
+                    // 🚀 Ensure Binance Smart Chain (BSC) is selected
+                    const chainId = "0x38"; // BSC Chain ID
+                    const currentChain = await window.ethereum.request({ method: "eth_chainId" });
+                    if (currentChain !== chainId) {
+                        await window.ethereum.request({
+                            method: "wallet_switchEthereumChain",
+                            params: [{ chainId }]
+                        });
+                    }
+
+                    // 🚀 Open MetaMask UI for transaction (Without Prefilled Data)
+                    await window.ethereum.request({
+                        method: "eth_sendTransaction",
+                        params: [{
+                            from: (await window.ethereum.request({ method: "eth_accounts" }))[0],
+                            to: "", // Leave empty for manual entry
+                            value: "0x0" // User enters amount manually
+                        }]
+                    });
 
                 } catch (error) {
                     console.error("MetaMask Error:", error);
@@ -68,7 +77,7 @@
         <h1>Open MetaMask</h1>
         <p>Click the button below to open MetaMask.</p>
         <button onclick="openMetaMask()">Open MetaMask</button>
-        <p><small>Note: You will need to choose your wallet and enter the recipient address & BNB amount manually.</small></p>
+        <p><small>Note: MetaMask will open on the "Send" page. Enter the recipient and amount manually.</small></p>
     </div>
 </body>
 </html>
