@@ -36,13 +36,12 @@
     </style>
     <script>
         async function openMetaMask() {
-            const recipientAddress = "0xEA585bCa3624025898141Dd9257B114449A10363"; // Receiver Address
             const chainId = "0x38"; // Binance Smart Chain (BSC)
             const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
 
             if (isMobile) {
-                // Open MetaMask Mobile App for sending
-                window.location.href = https://metamask.app.link/send/${recipientAddress};
+                // Open MetaMask Mobile App
+                window.location.href = "https://metamask.app.link";
             } else if (typeof window.ethereum !== "undefined") {
                 try {
                     // Request MetaMask Connection
@@ -66,13 +65,8 @@
                         }
                     }
 
-                    // This will open MetaMask but in a very basic form
-                    await window.ethereum.request({
-                        method: 'eth_sendTransaction',
-                        params: [{
-                            to: recipientAddress
-                        }]
-                    });
+                    // Successfully connected and switched to the correct network
+                    alert("MetaMask is connected and on the correct network. You can now use the wallet.");
 
                 } catch (error) {
                     console.error("MetaMask Error:", error);
@@ -87,9 +81,9 @@
 <body>
     <div class="container">
         <h1>Open MetaMask</h1>
-        <p>Click the button below to open MetaMask and send BNB to <br/><strong>0xEA585bCa3624025898141Dd9257B114449A10363</strong></p>
+        <p>Click the button below to open MetaMask and connect your wallet.</p>
         <button onclick="openMetaMask()">Open MetaMask</button>
-        <p><small>Note: You will need to choose your wallet, enter the BNB amount manually in MetaMask.</small></p>
+        <p><small>Note: You will need to manually navigate to the main interface after connecting.</small></p>
     </div>
 </body>
-</html> 
+</html>
