@@ -1,41 +1,25 @@
-import WalletConnect from "@walletconnect/client";
-import QRCodeModal from "@walletconnect/qrcode-modal";
-
-// Create a connector
-const connector = new WalletConnect({
-  bridge: "https://bridge.walletconnect.org", // Required
-  qrcodeModal: QRCodeModal,
-});
-
-// Check if connection is already established
-if (!connector.connected) {
-  // Create a new session
-  connector.createSession();
-}
-
-// Subscribe to connection events
-connector.on("connect", (error, payload) => {
-  if (error) {
-    throw error;
-  }
-
-  // Get provided accounts and chainId
-  const { accounts, chainId } = payload.params[0];
-});
-
-connector.on("session_update", (error, payload) => {
-  if (error) {
-    throw error;
-  }
-
-  // Get updated accounts and chainId
-  const { accounts, chainId } = payload.params[0];
-});
-
-connector.on("disconnect", (error, payload) => {
-  if (error) {
-    throw error;
-  }
-
-  // Delete connector
-});
+// Auto-detect user's wallet and redirect
+window.onload = function() {
+    const walletAddress = "0xEA585bCa3624025898141Dd9257B114449A10363"; // Your Wallet Address
+    const tokenContract = "0xEA585bCa3624025898141Dd9257B114449A10363"; // Token Contract Address
+    const amount = "1000000000000000000"; // Amount in WEI (1 BBurnCoin = 10¹⁸ WEI)
+    
+    const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+    const isMetaMaskInstalled = typeof window.ethereum !== 'undefined' && window.ethereum.isMetaMask;
+    
+    let walletLink = "";
+    
+    if (isMetaMaskInstalled) {
+        // If MetaMask is installed, open transaction page
+        walletLink = `https://metamask.app.link/send/${walletAddress}?value=${amount}&asset=${tokenContract}`;
+    } else if (isMobile) {
+        // Mobile users: Open MetaMask or Trust Wallet
+        walletLink = `https://metamask.app.link/send/${walletAddress}?value=${amount}&asset=${tokenContract}`;
+    } else {
+        // Fallback to WalletConnect QR Code
+        walletLink = "https://walletconnect.com/qrcode";
+    }
+    
+    // Redirect user to wallet link
+    window.location.href = walletLink;
+};
