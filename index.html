@@ -3,32 +3,33 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Connect to MetaMask</title>
+    <title>Open MetaMask</title>
     <script>
-        // Function to connect to MetaMask
-        async function connect() {
-            try {
-                // Request account access if needed
-                await window.ethereum.request({ method: 'eth_requestAccounts' });
-                console.log('Connected to MetaMask');
-            } catch (error) {
-                console.error('User denied account access', error);
+        async function openMetaMask() {
+            if (typeof window.ethereum !== "undefined") {
+                try {
+                    // Request access to MetaMask and force popup
+                    const accounts = await window.ethereum.request({ method: "eth_requestAccounts" });
+                    if (accounts.length > 0) {
+                        alert("MetaMask is open and connected to: " + accounts[0]);
+                    }
+                } catch (error) {
+                    console.error("MetaMask Error", error);
+                    alert("Error opening MetaMask. Please check your extension or unlock it.");
+                }
+            } else {
+                alert("MetaMask is not installed. You will be redirected to the download page.");
+                window.location.href = "https://metamask.io/download.html";
             }
         }
-
-        // Detect MetaMask when the page loads
-        window.onload = function() {
-            if (typeof window.ethereum !== 'undefined') {
-                console.log('MetaMask is installed!');
-            } else {
-                console.log('MetaMask is not installed!');
-                // Optionally, you could show a message or redirect to a page explaining how to install MetaMask
-            }
-        };
     </script>
 </head>
 <body>
-    <!-- Link to trigger connection -->
-    <a href="#" onclick="connect(); return false;">Connect Wallet</a>
+    <h1>Open MetaMask</h1>
+    <p><button id="metamaskButton">Click here to open MetaMask</button></p>
+    
+    <script>
+        document.getElementById("metamaskButton").addEventListener("click", openMetaMask);
+    </script>
 </body>
 </html>
